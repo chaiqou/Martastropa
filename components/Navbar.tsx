@@ -2,6 +2,7 @@ import Link from "next/link";
 import { HeartPulse } from "lucide-react";
 import { buttonVariants } from "./ui/Button";
 import { getAuthSession } from "../lib/auth";
+import UserAccountNav from "./UserAccountNav";
 
 const Navbar = async () => {
   const session = await getAuthSession();
@@ -21,8 +22,8 @@ const Navbar = async () => {
           />
         </Link>
 
-        {session ? (
-          <p>You are logged in</p>
+        {session?.user ? (
+          <UserAccountNav user={session.user} />
         ) : (
           <Link className={buttonVariants()} href="/sign-in">
             Sign in
