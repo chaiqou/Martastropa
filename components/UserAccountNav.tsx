@@ -1,5 +1,8 @@
 import React from "react";
-import { DropdownMenu, DropdownMenuTrigger } from "./ui/dropdownMenu";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+} from "../components/ui/DropdownMenu";
 import UserAvatar from "./UserAvatar";
 
 const UserAccountNav = ({ user }) => {
