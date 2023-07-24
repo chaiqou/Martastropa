@@ -15,15 +15,15 @@ const page = () => {
         <div className="bg-pink-100 px-6 py-4">
           <p className="font-semibold py-3 flex items-center gap-1.5">
             <HomeIcon className="w-4 h-4" />
-            Home
+            Lavazzas birja.
           </p>
         </div>
         <div className="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
           <div className="flex justify-between gap-x-4 py-3">
-            <p className="text-gray-500">Martastropas friendos home page</p>
+            <p className="text-gray-500">Martastropas friendos hood</p>
           </div>
           <Link
-            href="/r/create"
+            href="/m/create"
             className={buttonVariants({ className: "w-full mt-4 mb-6" })}
           >
             Add friendos
