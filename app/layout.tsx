@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import { cn } from "../lib/utils";
 import Navbar from "../components/Navbar";
 import { Toaster } from "../components/ui/Toaster";
+import Providers from "../components/Providers";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,14 +29,16 @@ export default function RootLayout({
       lang="en"
     >
       <body className="min-h-screen antialiased pt-12 bg-slate-50">
-        {/* @ts-expect-error-server-component */}
-        <Navbar />
-        {authModal}
-        <main className="container max-w-7xl mx-auto h-full pt-12">
-          {children}
-        </main>
+        <Providers>
+          {/* @ts-expect-error-server-component */}
+          <Navbar />
+          {authModal}
+          <main className="container max-w-7xl mx-auto h-full pt-12">
+            {children}
+          </main>
 
-        <Toaster />
+          <Toaster />
+        </Providers>
       </body>
     </html>
   );
