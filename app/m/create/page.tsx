@@ -27,17 +27,17 @@ const page = () => {
       if (err instanceof AxiosError) {
         if (err.response?.status === 409) {
           return toast({
-            title: "Friendo already exists.",
-            description: "Please choose different friendo",
+            title: "Community already exists.",
+            description: "Please choose different community",
             variant: "destructive",
           });
         }
 
         if (err.response?.status === 422) {
           return toast({
-            title: "Invalid friendo name.",
+            title: "Invalid community name.",
             description:
-              "Please choose friendo name between 3 and 21 characters.",
+              "Please choose community name between 3 and 21 characters.",
             variant: "destructive",
           });
         }
@@ -53,13 +53,17 @@ const page = () => {
         variant: "destructive",
       });
     },
+
+    onSuccess: (data) => {
+      router.push(`/m/${data}`);
+    },
   });
 
   return (
     <div className="container flex items-center h-full max-w-3xl mx-auto">
       <div className="relative bg-white w-full h-fit p-4 space-y-6 rounded-lg">
         <div className="flex justify-between items-center">
-          <h1 className="text-xl font-semibold">Create a friendo</h1>
+          <h1 className="text-xl font-semibold">Create a community</h1>
         </div>
 
         <hr className="bg-zinc-500 h-px" />
@@ -87,7 +91,7 @@ const page = () => {
             isLoading={isLoading}
             disabled={input.length === 0}
           >
-            Create friendo
+            Create community
           </Button>
         </div>
       </div>
