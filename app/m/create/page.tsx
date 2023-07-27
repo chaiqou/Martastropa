@@ -46,6 +46,12 @@ const page = () => {
           return loginToast();
         }
       }
+
+      toast({
+        title: "Something is wrong.",
+        description: "could not create subbredit",
+        variant: "destructive",
+      });
     },
   });
 
