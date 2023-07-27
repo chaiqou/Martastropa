@@ -1,3 +1,4 @@
+import { z } from "zod";
 import { getAuthSession } from "../../../lib/auth";
 import { db } from "../../../lib/db";
 import { SubredditValidator } from "../../../lib/validators/subreddit";
@@ -24,5 +25,17 @@ export async function POST(req: Request) {
     const subbredit = await db.subreddit.create({
       data: { name, creatorId: session.user.id },
     });
-  } catch (error) {}
+
+    await db.subscription.create({
+      data: { userId: session.user.id, subredditId: subbredit.id },
+    });
+
+    return new Response(subbredit.name);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return new Response(error.message, { status: 422 });
+    }
+
+    return new Response("Could not create subbredit", { status: 500 });
+  }
 }
