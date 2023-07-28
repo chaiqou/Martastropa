@@ -2,7 +2,7 @@
 
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
-import { Image as ImageIcon, Link2 } from "lucide-react";
+import { Image as ImageIcon } from "lucide-react";
 import { FC } from "react";
 import type { Session } from "next-auth";
 import { usePathname, useRouter } from "next/navigation";
