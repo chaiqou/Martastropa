@@ -26,7 +26,7 @@ const page = () => {
             href="/m/create"
             className={buttonVariants({ className: "w-full mt-4 mb-6" })}
           >
-            Add friendos
+            Create community
           </Link>
         </div>
       </div>
