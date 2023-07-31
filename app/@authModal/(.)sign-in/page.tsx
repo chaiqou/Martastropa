@@ -1,6 +1,6 @@
 import { FC } from "react";
-import SignIn from "../../../components/SignIn";
-import CloseModal from "../../../components/CloseModal";
+import SignIn from "../../../components/auth/SignIn";
+import CloseModal from "../../../components/shared/CloseModal";
 
 const page: FC = () => {
   return (

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { FC } from "react";
 import { buttonVariants } from "../../../components/ui/Button";
 import { cn } from "../../../lib/utils";
-import SignUp from "../../../components/SignUp";
+import SignUp from "../../../components/auth/SignUp";
 import { ChevronLeft } from "lucide-react";
 
 const page: FC = () => {

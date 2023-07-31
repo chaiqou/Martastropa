@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { HeartPulse } from "lucide-react";
-import { buttonVariants } from "./ui/Button";
-import { getAuthSession } from "../lib/auth";
-import UserAccountNav from "./UserAccountNav";
+import { buttonVariants } from "../ui/Button";
+import { getAuthSession } from "../../lib/auth";
+import UserAccountNav from "../UserAccountNav";
 
 const Navbar = async () => {
   const session = await getAuthSession();

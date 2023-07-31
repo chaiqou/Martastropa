@@ -1,7 +1,6 @@
 import React from "react";
 import { getAuthSession } from "../../../lib/auth";
 import { db } from "../../../lib/db";
-import { INFINITE_SCROLLING_PAGINATION_RESULTS } from "../../config";
 import { notFound } from "next/navigation";
 import { format } from "date-fns";
 
