@@ -80,7 +80,7 @@ const Layout = async ({
               {subreddit.creatorId === session?.user.id ? (
                 <div className="flex justify-between gap-x-4 py-3">
                   <p className="text-pink-500 font-bold">
-                    You created this community for Martastropa.
+                    You created this community for Reddit.
                   </p>
                 </div>
               ) : null}
