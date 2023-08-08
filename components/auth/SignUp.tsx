@@ -14,13 +14,12 @@ const SignUp = () => {
         />
         <h1 className="text-2xl font-semibold tracking-tight">Sign Up</h1>
         <p className="text-sm max-w-xs mx-auto">
-          By continuing, you are setting up a Martastropa account and agree to
-          Martaias cesebs bro.
+          By continuing, you are setting up a account and agree to terms and conditions.
         </p>
       </div>
       <UserAuthForm />
       <p className="px-8 text-center text-sm text-muted-foreground">
-        Already a Martastropas friendo ?!{" "}
+        Already a friendo ?!{" "}
         <Link
           href="/sign-in"
           className="hover:text-brand text-sm underline underline-offset-4"

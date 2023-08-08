@@ -1,8 +1,14 @@
-import React from 'react'
+'use client'
+import { useMutation } from '@tanstack/react-query';
 import { Button } from '../ui/Button';
 
 const SubscribeLeaveToggle = () => {
   const isSubscribed = false;
+
+
+  const {} = useMutation({
+    mutationFn: async () => {}
+  })
 
 
   return (
@@ -10,4 +16,4 @@ const SubscribeLeaveToggle = () => {
   )
 }
 
-export default SubscribeLeaveToggle
+export default SubscribeLeaveToggle;

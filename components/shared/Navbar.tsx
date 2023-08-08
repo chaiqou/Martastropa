@@ -12,7 +12,7 @@ const Navbar = async () => {
       <div className="container max-w-7xl h-full mx-auto flex items-center justify-between gap-2">
         <Link href="/" className="flex gap-2 items-center">
           <p className="hidden text-pink-600 text-sm font-black md:block">
-            Martastropa
+            Reddit
           </p>
           <HeartPulse
             color="#eb0089"

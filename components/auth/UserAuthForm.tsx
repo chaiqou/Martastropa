@@ -19,7 +19,7 @@ const UserAuthForm: FC<UserAuthFormProps> = ({ className, ...props }) => {
     } catch (error) {
       toast({
         title: "There was a problem",
-        description: "There was a problem daureke martaias",
+        description: "There was a problem",
         variant: "destructive",
       });
     } finally {
