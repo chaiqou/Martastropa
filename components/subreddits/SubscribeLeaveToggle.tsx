@@ -9,22 +9,28 @@ import { startTransition } from 'react';
 import { useRouter } from 'next/navigation';
 
 interface SubscribeLeaveToggleProps {
-  subredditId: string,
+  isSubscribed: boolean
+  subredditId: string
   subredditName: string
 }
 
-
-const SubscribeLeaveToggle = ({subredditId, subredditName}) => {
-  const isSubscribed = false;
+const SubscribeLeaveToggle = ({
+  isSubscribed,
+  subredditId,
+  subredditName,
+}: SubscribeLeaveToggleProps)  => {
   const {loginToast} = useCustomToast();
   const router = useRouter();
 
 
-  const {} = useMutation({
+  const {mutate: subscribe , isLoading: isSubLoading} = useMutation({
     mutationFn: async () => {
       const payload: SubscribeToSubredditPayload  = {
         subredditId,
+        subredditName,
+        isSubscribed,
       }
+      console.log(payload)
 
       const {data} = await axios.post('/api/subreddit/subscribe', payload);
 
@@ -33,6 +39,7 @@ const SubscribeLeaveToggle = ({subredditId, subredditName}) => {
     },
 
     onError: (error) => {
+      console.log(error)
       if(error instanceof AxiosError){
         if(error.response?.status === 401){
          return loginToast()
@@ -62,7 +69,7 @@ const SubscribeLeaveToggle = ({subredditId, subredditName}) => {
 
 
   return (
-    isSubscribed ? <Button className='w-full mt-1 mb-4'>Leave Community</Button> : <Button className='w-full mt-1 mb-4'>Join to post</Button>
+    isSubscribed ? <Button className='w-full mt-1 mb-4'>Leave Community</Button> : <Button  isLoading={isSubLoading} onClick={() => subscribe()} className='w-full mt-1 mb-4'>Join to post</Button>
   )
 }
 
