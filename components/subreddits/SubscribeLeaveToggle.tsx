@@ -5,21 +5,25 @@ import { SubscribeToSubredditPayload } from '../../lib/validators/subreddit';
 import axios, { AxiosError } from 'axios';
 import { useCustomToast } from '../../hooks/use-custom-toast';
 import { toast } from '../../hooks/use-toast';
+import { startTransition } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface SubscribeLeaveToggleProps {
-  subbreditId: string
+  subredditId: string,
+  subredditName: string
 }
 
 
-const SubscribeLeaveToggle = ({subbreditId}) => {
+const SubscribeLeaveToggle = ({subredditId, subredditName}) => {
   const isSubscribed = false;
   const {loginToast} = useCustomToast();
+  const router = useRouter();
 
 
   const {} = useMutation({
     mutationFn: async () => {
       const payload: SubscribeToSubredditPayload  = {
-        subbreditId,
+        subredditId,
       }
 
       const {data} = await axios.post('/api/subreddit/subscribe', payload);
@@ -40,7 +44,19 @@ const SubscribeLeaveToggle = ({subbreditId}) => {
         description: 'Something went wrong , please try again',
         variant: 'destructive',
       });
-    }
+    },
+
+    onSuccess: () => {
+      startTransition(() => {
+        router.refresh()
+      })
+
+      return toast({
+        title: "Subscribed",
+        description: `You are now subscribed to m/${subredditName}`
+  
+      });
+    },
 
   })
 
