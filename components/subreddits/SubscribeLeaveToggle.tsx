@@ -1,13 +1,30 @@
 'use client'
 import { useMutation } from '@tanstack/react-query';
 import { Button } from '../ui/Button';
+import { SubscribeToSubredditPayload } from '../../lib/validators/subreddit';
+import axios from 'axios';
 
-const SubscribeLeaveToggle = () => {
+interface SubscribeLeaveToggleProps {
+  subbreditId: string
+}
+
+
+const SubscribeLeaveToggle = ({subbreditId}) => {
   const isSubscribed = false;
 
 
   const {} = useMutation({
-    mutationFn: async () => {}
+    mutationFn: async () => {
+      const payload: SubscribeToSubredditPayload  = {
+        subbreditId,
+      }
+
+      const {data} = await axios.post('/api/subreddit/subscribe', payload);
+
+      return data as string;
+
+    }
+
   })
 
 
