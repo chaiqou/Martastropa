@@ -6,7 +6,8 @@ import {
   PostValidator,
   PostCreationRequest,
 } from "../../../lib/validators/post";
-import { useCallback } from "react";
+import { useCallback, useRef } from "react";
+import EditorJS from "@editorjs/editorjs";
 
 interface editorProps {
   subredditId: string;
@@ -26,6 +27,8 @@ const Editor = ({ subredditId }) => {
     },
   });
 
+  const ref = useRef<EditorJS>();
+
   const initializeEditor = useCallback(async () => {
     const EditorJs = (await import("@editorjs/editorjs")).default;
     const Header = (await import("@editorjs/header")).default;
@@ -36,6 +39,27 @@ const Editor = ({ subredditId }) => {
     const LinkTool = (await import("@editorjs/link")).default;
     const InlineCode = (await import("@editorjs/inline-code")).default;
     const ImageTool = (await import("@editorjs/image")).default;
+
+    if (!ref.current) {
+      const editor = new EditorJS({
+        holder: "editor",
+        onReady() {
+          ref.current = editor;
+        },
+        placeholder: "Type here to write your post...",
+        inlineToolbar: true,
+        data: { blocks: [] },
+        tools: {
+          header: Header,
+          LinkTool: {
+            class: LinkTool,
+            config: {
+              endpoint: "/api/link",
+            },
+          },
+        },
+      });
+    }
   }, []);
 
   return (
