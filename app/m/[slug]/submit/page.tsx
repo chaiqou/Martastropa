@@ -1,6 +1,8 @@
 import React from 'react'
 import { db } from '../../../../lib/db'
 import { notFound } from 'next/navigation'
+import { Button } from '../../../../components/ui/Button'
+import Editor from '../../../../components/subreddits/submit-post/Editor'
 
 interface PageProps {
     params: {
@@ -25,6 +27,11 @@ const page = async ({params}: PageProps) => {
                 <h3 className='ml-2 mt-3 text-base font-semibold leading-6 text-gray-900'>Create Post</h3>
                 <p className='ml-2 mt-1 truncate text-sm text-gray-500'>In m/{params.slug}</p>
             </div>
+        </div>
+
+        <Editor />
+        <div className='w-full flex justify-end'>
+            <Button form='subreddit-post-form' className='w-full' type='submit'>Post</Button>
         </div>
     </div>
   )
