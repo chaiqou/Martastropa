@@ -9,6 +9,7 @@ import {
 import { useCallback, useRef, useState, useEffect } from "react";
 import EditorJS from "@editorjs/editorjs";
 import { uploadFiles } from "../../../lib/uploadthing";
+import { toast } from "../../../hooks/use-toast";
 
 interface editorProps {
   subredditId: string;
@@ -36,6 +37,20 @@ const Editor = ({ subredditId }) => {
     if (typeof window !== "undefined") {
       setisMounted(true);
     }
+  }, []);
+
+  useEffect(() => {
+    if (Object.keys(errors).length) {
+      for (const [_key, value] of Object.entries(errors)) {
+        toast({
+          title: "Something went wrong",
+          description: (value as { message: string }).message,
+          variant: "destructive",
+        });
+      }
+    }
+
+    return () => {};
   }, []);
 
   const initializeEditor = useCallback(async () => {
