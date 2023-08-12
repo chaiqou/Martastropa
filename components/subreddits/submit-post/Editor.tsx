@@ -15,10 +15,10 @@ import axios from "axios";
 import { usePathname, useRouter } from "next/navigation";
 
 interface editorProps {
-  subredditId: string;
+  subredditId: any;
 }
 
-const Editor = ({ subredditId }) => {
+const Editor = ({ subredditId }: any) => {
   const {
     register,
     handleSubmit,
@@ -132,7 +132,7 @@ const Editor = ({ subredditId }) => {
     }
   }, [isMounted, initializeEditor]);
 
-  const {} = useMutation({
+  const { mutate: createPost } = useMutation({
     mutationFn: async ({
       title,
       content,
@@ -174,13 +174,19 @@ const Editor = ({ subredditId }) => {
       content: data.content,
       subredditId: subredditId,
     };
+
+    createPost(payload);
   }
 
   const { ref: titleRef, ...rest } = register("title");
 
   return (
     <div className="w-full p-4 bg-zinc-50 rounded-lg border border-zinc-200">
-      <form className="w-fit " id="subreddit-post-form">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="w-fit "
+        id="subreddit-post-form"
+      >
         <div className="prose prose-stone dark:prose-invert">
           <TextareaAutosize
             ref={(e) => {
