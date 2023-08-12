@@ -48,20 +48,6 @@ const Editor = ({ subredditId }) => {
     const InlineCode = (await import("@editorjs/inline-code")).default;
     const ImageTool = (await import("@editorjs/image")).default;
 
-    useEffect(() => {
-      const init = async () => {
-        await initializeEditor();
-
-        setTimeout(() => {}, 1000);
-
-        if (isMounted) {
-          init();
-
-          return () => {};
-        }
-      };
-    }, [isMounted, initializeEditor]);
-
     if (!ref.current) {
       const editor = new EditorJS({
         holder: "editor",
@@ -105,6 +91,23 @@ const Editor = ({ subredditId }) => {
       });
     }
   }, []);
+
+  useEffect(() => {
+    const init = async () => {
+      await initializeEditor();
+
+      setTimeout(() => {}, 0);
+    };
+
+    if (isMounted) {
+      init();
+
+      return () => {
+        ref.current?.destroy();
+        ref.current = undefined;
+      };
+    }
+  }, [isMounted, initializeEditor]);
 
   return (
     <div className="w-full p-4 bg-zinc-50 rounded-lg border border-zinc-200">
