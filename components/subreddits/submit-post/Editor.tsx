@@ -29,6 +29,7 @@ const Editor = ({ subredditId }) => {
   });
 
   const ref = useRef<EditorJS>();
+  const _titleRef = useRef<HTMLTextAreaElement>(null);
   const [isMounted, setisMounted] = useState<boolean>(false);
 
   useEffect(() => {
@@ -96,7 +97,9 @@ const Editor = ({ subredditId }) => {
     const init = async () => {
       await initializeEditor();
 
-      setTimeout(() => {}, 0);
+      setTimeout(() => {
+        _titleRef.current?.focus();
+      }, 0);
     };
 
     if (isMounted) {
@@ -109,11 +112,20 @@ const Editor = ({ subredditId }) => {
     }
   }, [isMounted, initializeEditor]);
 
+  const { ref: titleRef, ...rest } = register("title");
+
   return (
     <div className="w-full p-4 bg-zinc-50 rounded-lg border border-zinc-200">
       <form className="w-fit " id="subreddit-post-form">
         <div className="prose prose-stone dark:prose-invert">
           <TextareaAutosize
+            ref={(e) => {
+              titleRef(e);
+
+              // @ts-ignore
+              _titleRef.current = e;
+            }}
+            {...rest}
             placeholder="Title"
             className="w-full resize-none overflow-hidden appearance-none font-bold outline-none bg-transparent text-5xl"
           />
