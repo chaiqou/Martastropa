@@ -10,6 +10,9 @@ import { useCallback, useRef, useState, useEffect } from "react";
 import EditorJS from "@editorjs/editorjs";
 import { uploadFiles } from "../../../lib/uploadthing";
 import { toast } from "../../../hooks/use-toast";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
+import { usePathname, useRouter } from "next/navigation";
 
 interface editorProps {
   subredditId: string;
@@ -32,6 +35,8 @@ const Editor = ({ subredditId }) => {
   const ref = useRef<EditorJS>();
   const _titleRef = useRef<HTMLTextAreaElement>(null);
   const [isMounted, setisMounted] = useState<boolean>(false);
+  const pathName = usePathname();
+  const router = useRouter();
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -126,6 +131,50 @@ const Editor = ({ subredditId }) => {
       };
     }
   }, [isMounted, initializeEditor]);
+
+  const {} = useMutation({
+    mutationFn: async ({
+      title,
+      content,
+      subredditId,
+    }: PostCreationRequest) => {
+      const payload: PostCreationRequest = {
+        title,
+        content,
+        subredditId,
+      };
+
+      const { data } = await axios.post("/api/subreddit/post/create", payload);
+
+      return data;
+    },
+    onError: () => {
+      toast({
+        title: "Something went wrong",
+        description: "Your post was not published, please try again",
+        variant: "destructive",
+      });
+    },
+    onSuccess: () => {
+      const newPathname = pathName.split("/").slice(0, -1).join("/");
+      router.push(newPathname);
+      router.refresh();
+
+      return toast({
+        description: "Your post has been published",
+      });
+    },
+  });
+
+  async function onSubmit(data: PostCreationRequest) {
+    const blocks = await ref.current?.save();
+
+    const payload: PostCreationRequest = {
+      title: data.title,
+      content: data.content,
+      subredditId: subredditId,
+    };
+  }
 
   const { ref: titleRef, ...rest } = register("title");
 
