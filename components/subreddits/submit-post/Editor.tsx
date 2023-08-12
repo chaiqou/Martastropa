@@ -8,6 +8,7 @@ import {
 } from "../../../lib/validators/post";
 import { useCallback, useRef } from "react";
 import EditorJS from "@editorjs/editorjs";
+import { uploadFiles } from "../../../lib/uploadthing";
 
 interface editorProps {
   subredditId: string;
@@ -61,7 +62,16 @@ const Editor = ({ subredditId }) => {
             class: ImageTool,
             config: {
               uploader: {
-                async uploadByFile(file: File) {},
+                async uploadByFile(file: File) {
+                  const [res] = await uploadFiles([file], "imageUploader");
+
+                  return {
+                    success: 1,
+                    file: {
+                      url: res.fileUrl,
+                    },
+                  };
+                },
               },
             },
           },
