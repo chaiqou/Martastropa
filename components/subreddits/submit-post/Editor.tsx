@@ -57,6 +57,14 @@ const Editor = ({ subredditId }) => {
               endpoint: "/api/link",
             },
           },
+          image: {
+            class: ImageTool,
+            config: {
+              uploader: {
+                async uploadByFile(file: File) {},
+              },
+            },
+          },
         },
       });
     }
