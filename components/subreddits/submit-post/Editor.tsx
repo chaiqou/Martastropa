@@ -6,7 +6,7 @@ import {
   PostValidator,
   PostCreationRequest,
 } from "../../../lib/validators/post";
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, useState, useEffect } from "react";
 import EditorJS from "@editorjs/editorjs";
 import { uploadFiles } from "../../../lib/uploadthing";
 
@@ -29,6 +29,13 @@ const Editor = ({ subredditId }) => {
   });
 
   const ref = useRef<EditorJS>();
+  const [isMounted, setisMounted] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setisMounted(true);
+    }
+  }, []);
 
   const initializeEditor = useCallback(async () => {
     const EditorJs = (await import("@editorjs/editorjs")).default;
@@ -40,6 +47,20 @@ const Editor = ({ subredditId }) => {
     const LinkTool = (await import("@editorjs/link")).default;
     const InlineCode = (await import("@editorjs/inline-code")).default;
     const ImageTool = (await import("@editorjs/image")).default;
+
+    useEffect(() => {
+      const init = async () => {
+        await initializeEditor();
+
+        setTimeout(() => {}, 1000);
+
+        if (isMounted) {
+          init();
+
+          return () => {};
+        }
+      };
+    }, [isMounted, initializeEditor]);
 
     if (!ref.current) {
       const editor = new EditorJS({
@@ -75,6 +96,11 @@ const Editor = ({ subredditId }) => {
               },
             },
           },
+          list: List,
+          code: Code,
+          inlineCode: InlineCode,
+          embed: Embed,
+          table: Table,
         },
       });
     }
@@ -88,6 +114,7 @@ const Editor = ({ subredditId }) => {
             placeholder="Title"
             className="w-full resize-none overflow-hidden appearance-none font-bold outline-none bg-transparent text-5xl"
           />
+          <div id="editor" className="min-h-[500px]"></div>
         </div>
       </form>
     </div>
