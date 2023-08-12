@@ -1,29 +1,35 @@
 "use client";
-import TextareaAutosize from "react-textarea-autosize";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  PostValidator,
-  PostCreationRequest,
-} from "../../../lib/validators/post";
-import { useCallback, useRef, useState, useEffect } from "react";
 import EditorJS from "@editorjs/editorjs";
-import { uploadFiles } from "../../../lib/uploadthing";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { usePathname, useRouter } from "next/navigation";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
+import TextareaAutosize from "react-textarea-autosize";
+import { z } from "zod";
+
 import { toast } from "../../../hooks/use-toast";
+import { uploadFiles } from "../../../lib/uploadthing";
+import {
+  PostCreationRequest,
+  PostValidator,
+} from "../../../lib/validators/post";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
-import { usePathname, useRouter } from "next/navigation";
 
-interface editorProps {
-  subredditId: any;
+import "../../../styles/editor.css";
+
+type FormData = z.infer<typeof PostValidator>;
+
+interface EditorProps {
+  subredditId: string;
 }
 
-const Editor = ({ subredditId }: any) => {
+const Editor: React.FC<EditorProps> = ({ subredditId }) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<PostCreationRequest>({
+  } = useForm<FormData>({
     resolver: zodResolver(PostValidator),
     defaultValues: {
       subredditId,
@@ -31,35 +37,44 @@ const Editor = ({ subredditId }: any) => {
       content: null,
     },
   });
-
   const ref = useRef<EditorJS>();
   const _titleRef = useRef<HTMLTextAreaElement>(null);
-  const [isMounted, setisMounted] = useState<boolean>(false);
-  const pathName = usePathname();
   const router = useRouter();
+  const [isMounted, setIsMounted] = useState<boolean>(false);
+  const pathname = usePathname();
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setisMounted(true);
-    }
-  }, []);
+  const { mutate: createPost } = useMutation({
+    mutationFn: async ({
+      title,
+      content,
+      subredditId,
+    }: PostCreationRequest) => {
+      const payload: PostCreationRequest = { title, content, subredditId };
+      const { data } = await axios.post("/api/subreddit/post/create", payload);
+      return data;
+    },
+    onError: () => {
+      return toast({
+        title: "Something went wrong.",
+        description: "Your post was not published. Please try again.",
+        variant: "destructive",
+      });
+    },
+    onSuccess: () => {
+      // turn pathname /r/mycommunity/submit into /r/mycommunity
+      const newPathname = pathname.split("/").slice(0, -1).join("/");
+      router.push(newPathname);
 
-  useEffect(() => {
-    if (Object.keys(errors).length) {
-      for (const [_key, value] of Object.entries(errors)) {
-        toast({
-          title: "Something went wrong",
-          description: (value as { message: string }).message,
-          variant: "destructive",
-        });
-      }
-    }
+      router.refresh();
 
-    return () => {};
-  }, []);
+      return toast({
+        description: "Your post has been published.",
+      });
+    },
+  });
 
   const initializeEditor = useCallback(async () => {
-    const EditorJs = (await import("@editorjs/editorjs")).default;
+    const EditorJS = (await import("@editorjs/editorjs")).default;
     const Header = (await import("@editorjs/header")).default;
     const Embed = (await import("@editorjs/embed")).default;
     const Table = (await import("@editorjs/table")).default;
@@ -80,7 +95,7 @@ const Editor = ({ subredditId }: any) => {
         data: { blocks: [] },
         tools: {
           header: Header,
-          LinkTool: {
+          linkTool: {
             class: LinkTool,
             config: {
               endpoint: "/api/link",
@@ -91,6 +106,7 @@ const Editor = ({ subredditId }: any) => {
             config: {
               uploader: {
                 async uploadByFile(file: File) {
+                  // upload to uploadthing
                   const [res] = await uploadFiles([file], "imageUploader");
 
                   return {
@@ -106,10 +122,29 @@ const Editor = ({ subredditId }: any) => {
           list: List,
           code: Code,
           inlineCode: InlineCode,
-          embed: Embed,
           table: Table,
+          embed: Embed,
         },
       });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (Object.keys(errors).length) {
+      for (const [_key, value] of Object.entries(errors)) {
+        value;
+        toast({
+          title: "Something went wrong.",
+          description: (value as { message: string }).message,
+          variant: "destructive",
+        });
+      }
+    }
+  }, [errors]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setIsMounted(true);
     }
   }, []);
 
@@ -118,7 +153,7 @@ const Editor = ({ subredditId }: any) => {
       await initializeEditor();
 
       setTimeout(() => {
-        _titleRef.current?.focus();
+        _titleRef?.current?.focus();
       }, 0);
     };
 
@@ -132,50 +167,20 @@ const Editor = ({ subredditId }: any) => {
     }
   }, [isMounted, initializeEditor]);
 
-  const { mutate: createPost } = useMutation({
-    mutationFn: async ({
-      title,
-      content,
-      subredditId,
-    }: PostCreationRequest) => {
-      const payload: PostCreationRequest = {
-        title,
-        content,
-        subredditId,
-      };
-
-      const { data } = await axios.post("/api/subreddit/post/create", payload);
-
-      return data;
-    },
-    onError: () => {
-      toast({
-        title: "Something went wrong",
-        description: "Your post was not published, please try again",
-        variant: "destructive",
-      });
-    },
-    onSuccess: () => {
-      const newPathname = pathName.split("/").slice(0, -1).join("/");
-      router.push(newPathname);
-      router.refresh();
-
-      return toast({
-        description: "Your post has been published",
-      });
-    },
-  });
-
-  async function onSubmit(data: PostCreationRequest) {
+  async function onSubmit(data: FormData) {
     const blocks = await ref.current?.save();
 
     const payload: PostCreationRequest = {
       title: data.title,
-      content: data.content,
-      subredditId: subredditId,
+      content: blocks,
+      subredditId,
     };
 
     createPost(payload);
+  }
+
+  if (!isMounted) {
+    return null;
   }
 
   const { ref: titleRef, ...rest } = register("title");
@@ -183,23 +188,29 @@ const Editor = ({ subredditId }: any) => {
   return (
     <div className="w-full p-4 bg-zinc-50 rounded-lg border border-zinc-200">
       <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="w-fit "
         id="subreddit-post-form"
+        className="w-fit"
+        onSubmit={handleSubmit(onSubmit)}
       >
         <div className="prose prose-stone dark:prose-invert">
           <TextareaAutosize
             ref={(e) => {
               titleRef(e);
-
               // @ts-ignore
               _titleRef.current = e;
             }}
             {...rest}
             placeholder="Title"
-            className="w-full resize-none overflow-hidden appearance-none font-bold outline-none bg-transparent text-5xl"
+            className="w-full resize-none appearance-none overflow-hidden bg-transparent text-5xl font-bold focus:outline-none"
           />
-          <div id="editor" className="min-h-[500px]"></div>
+          <div id="editor" className="min-h-[500px]" />
+          <p className="text-sm text-gray-500">
+            Use{" "}
+            <kbd className="rounded-md border bg-muted px-1 text-xs uppercase">
+              Tab
+            </kbd>{" "}
+            to open the command menu.
+          </p>
         </div>
       </form>
     </div>
