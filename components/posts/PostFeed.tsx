@@ -7,13 +7,12 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { INFINITE_SCROLLING_PAGINATION_RESULTS } from "../../app/config";
 import axios from "axios";
 import { useSession } from "next-auth/react";
+import Post from "./Post";
 
 interface PostFeedProps {
   initialPosts: ExtendedPost[];
   subredditName?: string;
 }
-
-const { data: session } = useSession();
 
 const PostFeed = ({ initialPosts, subredditName }) => {
   const lastPostRef = useRef(null);
@@ -21,6 +20,8 @@ const PostFeed = ({ initialPosts, subredditName }) => {
     root: lastPostRef.current,
     threshold: 1,
   });
+
+  const { data: session } = useSession();
 
   const { data, fetchNextPage, isFetchingNextPage } = useInfiniteQuery(
     ["infinite-query"],
@@ -45,7 +46,7 @@ const PostFeed = ({ initialPosts, subredditName }) => {
   return (
     <ul className="flex flex-col col-span-2 space-y-6">
       {posts.map((post: any, index: any) => {
-        const votesAmount = post.vote.reduce(
+        const votesAmount = post.votes.reduce(
           (accumulator: any, current: any) => {
             if (current.type === "UP") return accumulator + 1;
             if (current.type === "DOWN") return accumulator - 1;
@@ -54,10 +55,19 @@ const PostFeed = ({ initialPosts, subredditName }) => {
           0
         );
 
-        const currentVote = post.vote.find(
+        const currentVote = post.votes.find(
           (vote: any) => vote.userId === session?.user.id
         );
-        return <div></div>;
+
+        if (index === post.length - 1) {
+          return (
+            <li ref={ref} key={post.id}>
+              <Post />
+            </li>
+          );
+        } else {
+          return <Post />;
+        }
       })}
     </ul>
   );

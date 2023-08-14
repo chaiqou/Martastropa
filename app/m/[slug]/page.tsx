@@ -3,6 +3,7 @@ import { getAuthSession } from "../../../lib/auth";
 import { INFINITE_SCROLLING_PAGINATION_RESULTS } from "../../config";
 import { notFound } from "next/navigation";
 import MiniCreatePost from "../../../components/MiniCreatePost";
+import PostFeed from "../../../components/posts/PostFeed";
 
 interface pageProps {
   params: {
@@ -39,7 +40,10 @@ const page = async ({ params }: pageProps) => {
         m/{subreddit.name}
       </h1>
       <MiniCreatePost session={session} />
-      <PostFeed />
+      <PostFeed
+        subredditName={subreddit.name}
+        initialPosts={subreddit.posts}
+      ></PostFeed>
     </div>
   );
 };
