@@ -1,5 +1,6 @@
 import { Post, User, Vote } from "@prisma/client";
 import React, { FC } from "react";
+import { formatTimeToNow } from "../../lib/utils";
 
 interface postPorps {
   subredditName: string;
@@ -26,7 +27,8 @@ const Post: FC<postPorps> = ({ subredditName, post }) => {
                 <span className="px-1">-</span>
               </>
             ) : null}
-            <span>Posted by u/{post.author.name}</span>
+            <span>Posted by u/{post.author.name}</span>{" "}
+            {formatTimeToNow(new Date(post.createdAt))}
           </div>
         </div>
       </div>
