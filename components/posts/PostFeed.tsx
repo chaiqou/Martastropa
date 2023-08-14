@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { FC, useRef } from "react";
 import { ExtendedPost } from "../../types/db";
 import { useIntersection } from "@mantine/hooks";
 import { useInfiniteQuery } from "@tanstack/react-query";
@@ -14,7 +14,7 @@ interface PostFeedProps {
   subredditName?: string;
 }
 
-const PostFeed = ({ initialPosts, subredditName }) => {
+const PostFeed: FC<PostFeedProps> = ({ initialPosts, subredditName }) => {
   const lastPostRef = useRef(null);
   const { ref, entry } = useIntersection({
     root: lastPostRef.current,
@@ -62,11 +62,11 @@ const PostFeed = ({ initialPosts, subredditName }) => {
         if (index === post.length - 1) {
           return (
             <li ref={ref} key={post.id}>
-              <Post />
+              <Post post={post} subredditName={post.subreddit.name} />
             </li>
           );
         } else {
-          return <Post />;
+          return <Post post={post} subredditName={post.subreddit.name} />;
         }
       })}
     </ul>
