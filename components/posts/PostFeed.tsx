@@ -6,11 +6,14 @@ import { useIntersection } from "@mantine/hooks";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { INFINITE_SCROLLING_PAGINATION_RESULTS } from "../../app/config";
 import axios from "axios";
+import { useSession } from "next-auth/react";
 
 interface PostFeedProps {
   initialPosts: ExtendedPost[];
   subredditName?: string;
 }
+
+const { data: session } = useSession();
 
 const PostFeed = ({ initialPosts, subredditName }) => {
   const lastPostRef = useRef(null);
@@ -37,7 +40,27 @@ const PostFeed = ({ initialPosts, subredditName }) => {
     }
   );
 
-  return <ul className="flex flex-col col-span-2 space-y-6">PostFeed</ul>;
+  const posts = data?.pages.flatMap((page) => page) ?? initialPosts;
+
+  return (
+    <ul className="flex flex-col col-span-2 space-y-6">
+      {posts.map((post: any, index: any) => {
+        const votesAmount = post.vote.reduce(
+          (accumulator: any, current: any) => {
+            if (current.type === "UP") return accumulator + 1;
+            if (current.type === "DOWN") return accumulator - 1;
+            return accumulator;
+          },
+          0
+        );
+
+        const currentVote = post.vote.find(
+          (vote: any) => vote.userId === session?.user.id
+        );
+        return <div></div>;
+      })}
+    </ul>
+  );
 };
 
 export default PostFeed;
